@@ -1,72 +1,74 @@
+/*
+ * main 함수에는 기본 구조만 구현 -> 전체의 흐름을 파악하기 좋다.
+ * 
+ * 주요기능은 phoneView, PhoneRepository 클래스 만들어서 구현
+ * 
+ * phoneView: 화면과 관련되 업무
+ * PhoneManager: 리스트에 데이터를 추가, 삭제 등의 관리
+ * 				리스트의 정보가 변할 경우 파일에 저장하는 업무
+ */
+
 package miniProject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 public class PhonDBApp {
 	
-	static ArrayList<Person> pList = new ArrayList<>();
-	
 	public static void main(String[] args) throws IOException {
 		
-		BufferedReader br = new BufferedReader(new FileReader("C:\\javaStudy\\미니프로젝트\\PhoneDB.txt"));
-		
-		PhoneManager phoneManager = new PhoneManager(pList);
-		
-		phoneManager.makeList(br);
-		
-		
-		// 1. 시작 화면
-		System.out.println("******************************************");
-		System.out.println("*              전화번호 관리 프로그램           *");
-		System.out.println("******************************************");
-		
-		br = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
+		PhoneManager phoneManager = new PhoneManager();
+		PhoneView phoneView = new PhoneView();
 		
 		boolean btn = true;
 		
+		// 1. 시작 화면
+		phoneView.showTitle();
+		
 		while(btn) {
 			
-			System.out.println();
-			System.out.println("1. 리스트  2. 등록  3. 삭제  4. 검색  5. 종료");
-			System.out.println("------------------------------------------");
-			System.out.print("> 메뉴번호: ");
-			
-			int menu = Integer.parseInt(br.readLine());	
+			int menu = phoneView.showMenu();
 			
 			switch(menu) {
 			case 1:
-				phoneManager.showList();
+				phoneView.showList(phoneManager.getpList());
 				break;
+				
 			case 2:
-				phoneManager.addPerson(br);
+				//phoneView.addPerson(phoneManager.getpList());
+				
+				Person p01 = phoneView.getPersonInfo();
+				phoneManager.addPerson(p01);
+				System.out.println("[ 등록되었습니다 ]");
 				break;
+				
 			case 3:
-				phoneManager.removePerson(br);
+				//phoneView.removePerson(phoneManager.getpList());
+				
+				int removeNum = phoneView.getRemoveNum();
+				phoneManager.removePerson(removeNum);
+				System.out.println("[ 삭제되었습니다. ]");
 				break;
+				
 			case 4:
-				phoneManager.searchPerson(br);
+				//phoneView.searchPerson(phoneManager.getpList());
+				
+				String keyword = phoneView.getSearchKeyword();
+				phoneManager.searchPerson(keyword);
 				break;
+				
 			case 5:
 				btn = false;
-				br.close();
 				break;
+				
 			default:
 				System.out.println("[ 다시 입력해주세요. ]");
+				break;
 			}
 
 		}
 		
 		phoneManager.updateFile();
-		
-		System.out.println("*********************************");
-		System.out.println("*          감사합니다.              *");
-		System.out.println("*********************************");
+		phoneView.showEnd();
 	}
 	
 
